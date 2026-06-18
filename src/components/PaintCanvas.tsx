@@ -32,7 +32,7 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
 
   // SVG Mask data URL for the cat silhouette
   const activePosePath = posePath || 'M 80 70 Q 95 60 90 40 Q 85 20 75 35 Q 70 45 75 60 Z M 30 80 Q 50 85 70 80 L 75 50 Q 50 40 25 50 Z';
-  const catSvgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g transform="rotate(${rotation}, 50, 50)"><path d="${activePosePath}" /></g></svg>`;
+  const catSvgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g transform="rotate(0, 50, 50)"><path d="${activePosePath}" /></g></svg>`;
   const catMaskUrl = `data:image/svg+xml,${encodeURIComponent(catSvgString)}`;
 
   useImperativeHandle(ref, () => ({

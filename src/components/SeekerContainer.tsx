@@ -157,7 +157,7 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
             top: `${posTop}%`,
             width: '25%',
             aspectRatio: '1 / 1',
-            transform: 'translate(-50%, -50%)',
+            transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
             filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none' 
           }}
           onClick={handleCatClick}

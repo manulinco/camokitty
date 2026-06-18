@@ -152,7 +152,7 @@ export default function GameContainer() {
             top: `${pos.top}%`,
             width: '25%',
             aspectRatio: '1 / 1',
-            transform: 'translate(-50%, -50%)',
+            transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
             touchAction: 'none'
           }}
           onPointerDown={handlePointerDown}
