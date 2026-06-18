@@ -93,12 +93,12 @@ export default function GameContainer() {
   if (!level) return null;
 
   return (
-    <div className="w-full max-w-3xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-fuchsia-500/20 backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full max-w-5xl flex flex-col md:flex-row mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-fuchsia-500/20 backdrop-blur-xl relative overflow-hidden">
       
-      {/* Top Scene Area - Exactly aspect ratio matched with Seeker */}
+      {/* Scene Area - Fixed aspect ratio relative to width */}
       <div 
         ref={containerRef}
-        className="w-full aspect-[4/3] shrink-0 relative overflow-hidden bg-cover bg-center touch-none"
+        className="w-full md:flex-1 aspect-[4/3] shrink-0 relative overflow-hidden bg-cover bg-center touch-none"
         style={{ backgroundImage: `url("${level.bg.url}")` }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60 pointer-events-none" />

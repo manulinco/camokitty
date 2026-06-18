@@ -129,7 +129,7 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
   const posTop = hideData.posTop !== undefined ? hideData.posTop : 90; // approximate bottom-[10%]
 
   return (
-    <div className="w-full max-w-3xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full max-w-4xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
       
       {/* Top Scene Area - Acts as the miss detection zone. Exactly aspect ratio matched with Create. */}
       <div 
