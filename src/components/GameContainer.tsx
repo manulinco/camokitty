@@ -212,10 +212,10 @@ export default function GameContainer() {
       {/* Independent Floating Toolbar */}
       {!isHidden && (
         <div 
-          className={`fixed bottom-0 left-0 w-full md:bottom-auto md:left-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-50 flex justify-end transition-transform duration-75 ${isDraggingToolbar ? 'opacity-90' : ''}`}
+          className={`fixed bottom-0 left-0 w-full md:w-auto md:bottom-auto md:left-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-50 pointer-events-none flex justify-end transition-transform duration-75 ${isDraggingToolbar ? 'opacity-90' : ''}`}
           style={{ transform: `translate(${toolbarPos.x}px, ${toolbarPos.y}px)` }}
         >
-          <div className="bg-slate-900/95 backdrop-blur-xl md:rounded-2xl border-t md:border border-fuchsia-500/30 shadow-2xl shadow-fuchsia-900/20 w-full md:w-[320px] max-h-[50vh] md:max-h-[90vh] overflow-y-auto flex flex-col">
+          <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-xl md:rounded-2xl border-t md:border border-fuchsia-500/30 shadow-2xl shadow-fuchsia-900/20 w-full md:w-[320px] max-h-[50vh] md:max-h-[90vh] overflow-y-auto flex flex-col">
             
             {/* Drag Handle */}
             <div 
