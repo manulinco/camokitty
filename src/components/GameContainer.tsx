@@ -93,19 +93,19 @@ export default function GameContainer() {
   if (!level) return null;
 
   return (
-    <div className="w-full max-w-5xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-fuchsia-500/20 backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full max-w-3xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-fuchsia-500/20 backdrop-blur-xl relative overflow-hidden">
       
       {/* Top Scene Area - Exactly aspect ratio matched with Seeker */}
       <div 
         ref={containerRef}
-        className="w-full aspect-[4/3] md:aspect-[3/2] relative overflow-hidden bg-cover bg-center touch-none"
+        className="w-full aspect-[4/3] shrink-0 relative overflow-hidden bg-cover bg-center touch-none"
         style={{ backgroundImage: `url("${level.bg.url}")` }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/60 pointer-events-none" />
         
         {/* Task Prompt */}
         <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/60 px-6 py-2 rounded-full border border-cyan-400/30 backdrop-blur-md z-20 pointer-events-none">
-          <span className="font-bold text-white tracking-wide flex gap-2 items-center">
+          <span className="font-bold text-white tracking-wide flex gap-2 items-center text-xs md:text-sm whitespace-nowrap">
             <span>Blend into the <span className="text-cyan-400">{level.bg.name}</span></span>
             <span className="text-slate-400">|</span>
             <span className="text-fuchsia-400">Pose: {level.pose.name}</span>
@@ -114,10 +114,12 @@ export default function GameContainer() {
 
         {/* Character Container - Draggable */}
         <div 
-          className={`absolute w-[180px] h-[180px] md:w-[250px] md:h-[250px] z-10 transition-opacity duration-1000 ${isHidden ? 'opacity-0' : 'opacity-100'} ${activeTool === 'move' ? 'cursor-move' : ''}`}
+          className={`absolute z-10 transition-opacity duration-1000 ${isHidden ? 'opacity-0' : 'opacity-100'} ${activeTool === 'move' ? 'cursor-move' : ''}`}
           style={{ 
             left: `${pos.left}%`, 
             top: `${pos.top}%`,
+            width: '25%',
+            aspectRatio: '1 / 1',
             transform: 'translate(-50%, -50%)',
             touchAction: 'none'
           }}

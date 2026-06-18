@@ -129,11 +129,11 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
   const posTop = hideData.posTop !== undefined ? hideData.posTop : 90; // approximate bottom-[10%]
 
   return (
-    <div className="w-full max-w-5xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
+    <div className="w-full max-w-3xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
       
       {/* Top Scene Area - Acts as the miss detection zone. Exactly aspect ratio matched with Create. */}
       <div 
-        className={`w-full aspect-[4/3] md:aspect-[3/2] relative overflow-hidden bg-cover bg-center transition-transform duration-75 ${isStunned ? 'translate-x-1 -translate-y-1 bg-red-900/20' : ''}`}
+        className={`w-full aspect-[4/3] shrink-0 relative overflow-hidden bg-cover bg-center transition-transform duration-75 ${isStunned ? 'translate-x-1 -translate-y-1 bg-red-900/20' : ''}`}
         style={{ backgroundImage: `url("${bgUrl}")` }}
         onClick={handleBackgroundClick}
       >
@@ -151,10 +151,12 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
 
         {/* Character Container - Fluidly positioned */}
         <div 
-          className={`absolute w-[180px] h-[180px] md:w-[250px] md:h-[250px] z-10 transition-all duration-500 ${isStunned ? 'pointer-events-none' : 'cursor-crosshair'}`}
+          className={`absolute z-10 transition-all duration-500 ${isStunned ? 'pointer-events-none' : 'cursor-crosshair'}`}
           style={{ 
             left: `${posLeft}%`, 
             top: `${posTop}%`,
+            width: '25%',
+            aspectRatio: '1 / 1',
             transform: 'translate(-50%, -50%)',
             filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none' 
           }}
