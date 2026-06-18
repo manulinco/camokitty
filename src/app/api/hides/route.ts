@@ -10,7 +10,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Missing paintData' }, { status: 400 });
     }
 
-    const newId = crypto.randomBytes(4).toString('hex'); // 8 chars ID
+    const shortCode = crypto.randomBytes(2).toString('hex'); // 4 chars
+    const bgName = bgId ? bgId.replace('bg-', '') : 'camo';
+    const newId = `${bgName}-${shortCode}`;
     
     const entry: HideEntry = {
       id: newId,
