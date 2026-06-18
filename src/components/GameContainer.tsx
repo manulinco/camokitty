@@ -138,17 +138,6 @@ export default function GameContainer() {
         </div>
       </div>
 
-      {/* Bottom Control Panel */}
-      <PaintToolbar 
-        brushColor={brushColor}
-        setBrushColor={setBrushColor}
-        brushSize={brushSize}
-        setBrushSize={setBrushSize}
-        activeTool={activeTool}
-        setActiveTool={setActiveTool}
-        onSubmit={submitHide}
-      />
-
       {/* Result Overlay */}
       {isHidden && (
         <div className="absolute inset-0 bg-black/80 z-50 flex flex-col items-center justify-center animate-in fade-in duration-300">
@@ -186,6 +175,25 @@ export default function GameContainer() {
         </div>
       )}
 
-    </div>
+      </div>
+
+      {/* Independent Floating Toolbar */}
+      {!isHidden && (
+        <div className="fixed bottom-0 left-0 w-full md:bottom-auto md:left-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-50 pointer-events-none flex justify-end">
+          <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-xl md:rounded-2xl border-t md:border border-fuchsia-500/30 shadow-2xl shadow-fuchsia-900/20 w-full md:w-[320px] max-h-[50vh] md:max-h-[90vh] overflow-y-auto">
+            <PaintToolbar 
+              brushColor={brushColor}
+              setBrushColor={setBrushColor}
+              brushSize={brushSize}
+              setBrushSize={setBrushSize}
+              activeTool={activeTool}
+              setActiveTool={setActiveTool}
+              onSubmit={submitHide}
+            />
+          </div>
+        </div>
+      )}
+
+    </>
   );
 }

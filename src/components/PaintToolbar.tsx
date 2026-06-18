@@ -21,7 +21,7 @@ export default function PaintToolbar({ brushColor, setBrushColor, brushSize, set
   ];
 
   return (
-    <div className="bg-slate-900/95 backdrop-blur-xl p-4 md:p-6 flex flex-col gap-6 md:w-[320px] shrink-0 border-t md:border-t-0 md:border-l border-fuchsia-500/20 z-20 overflow-y-auto">
+    <div className="p-4 md:p-6 flex flex-col gap-6">
       
       {/* Tools Section */}
       <div className="flex flex-col gap-3">
