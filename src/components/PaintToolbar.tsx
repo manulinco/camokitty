@@ -10,10 +10,12 @@ interface PaintToolbarProps {
   setBrushSize: (s: number) => void;
   activeTool: 'paint' | 'move' | 'eraser';
   setActiveTool: (tool: 'paint' | 'move' | 'eraser') => void;
+  rotation: number;
+  setRotation: (r: number) => void;
   onSubmit: () => void;
 }
 
-export default function PaintToolbar({ brushColor, setBrushColor, brushSize, setBrushSize, activeTool, setActiveTool, onSubmit }: PaintToolbarProps) {
+export default function PaintToolbar({ brushColor, setBrushColor, brushSize, setBrushSize, activeTool, setActiveTool, rotation, setRotation, onSubmit }: PaintToolbarProps) {
   const predefinedColors = [
     '#ffffff', '#000000', '#5c3a21', '#8b4513', '#d2691e', 
     '#cd853f', '#f4a460', '#ff8c00', '#228b22', '#006400',
@@ -74,6 +76,22 @@ export default function PaintToolbar({ brushColor, setBrushColor, brushSize, set
           max="50" 
           value={brushSize}
           onChange={(e) => setBrushSize(parseInt(e.target.value))}
+          className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
+        />
+      </div>
+
+      {/* Rotation Section */}
+      <div className="flex flex-col gap-3">
+        <div className="text-slate-400 font-semibold text-xs tracking-wider flex justify-between">
+          <span>ROTATION</span>
+          <span>{rotation}°</span>
+        </div>
+        <input 
+          type="range" 
+          min="0" 
+          max="360" 
+          value={rotation}
+          onChange={(e) => setRotation(parseInt(e.target.value))}
           className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
         />
       </div>

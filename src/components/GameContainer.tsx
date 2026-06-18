@@ -18,12 +18,20 @@ export default function GameContainer() {
   // Cat Position State (percentages)
   const [pos, setPos] = useState({ left: 50, top: 50 });
   const [isDragging, setIsDragging] = useState(false);
+  const [rotation, setRotation] = useState(0);
+
+  // Toolbar drag state
+  const [toolbarPos, setToolbarPos] = useState({ x: 0, y: 0 });
+  const [isDraggingToolbar, setIsDraggingToolbar] = useState(false);
+  const toolbarDragOffset = useRef({ x: 0, y: 0 });
   
   const canvasRef = useRef<PaintCanvasRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setLevel(getRandomLevel());
+    const newLevel = getRandomLevel();
+    setLevel(newLevel);
+    setRotation(newLevel.rotation);
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -43,14 +51,37 @@ export default function GameContainer() {
       const topPct = (y / rect.height) * 100;
       
       setPos({
-        left: Math.max(0, Math.min(100, leftPct)),
-        top: Math.max(0, Math.min(100, topPct))
+        left: Math.max(10, Math.min(90, leftPct)),
+        top: Math.max(10, Math.min(90, topPct))
       });
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
+  const handleToolbarPointerDown = (e: React.PointerEvent) => {
+    setIsDraggingToolbar(true);
+    toolbarDragOffset.current = {
+      x: e.clientX - toolbarPos.x,
+      y: e.clientY - toolbarPos.y
+    };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handleToolbarPointerMove = (e: React.PointerEvent) => {
+    if (isDraggingToolbar) {
+      setToolbarPos({
+        x: e.clientX - toolbarDragOffset.current.x,
+        y: e.clientY - toolbarDragOffset.current.y
+      });
+    }
+  };
+
+  const handleToolbarPointerUp = (e: React.PointerEvent) => {
+    setIsDraggingToolbar(false);
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   };
 
@@ -70,7 +101,7 @@ export default function GameContainer() {
           paintData, 
           bgId: level.bg.id, 
           poseId: level.pose.id, 
-          rotation: level.rotation,
+          rotation: rotation,
           posLeft: pos.left,
           posTop: pos.top
         })
@@ -134,7 +165,7 @@ export default function GameContainer() {
             brushSize={brushSize}
             isDrawingEnabled={activeTool === 'paint' || activeTool === 'eraser'}
             posePath={level.pose.path}
-            rotation={level.rotation}
+            rotation={rotation}
           />
         </div>
       </div>
@@ -180,8 +211,23 @@ export default function GameContainer() {
 
       {/* Independent Floating Toolbar */}
       {!isHidden && (
-        <div className="fixed bottom-0 left-0 w-full md:bottom-auto md:left-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-50 pointer-events-none flex justify-end">
-          <div className="pointer-events-auto bg-slate-900/95 backdrop-blur-xl md:rounded-2xl border-t md:border border-fuchsia-500/30 shadow-2xl shadow-fuchsia-900/20 w-full md:w-[320px] max-h-[50vh] md:max-h-[90vh] overflow-y-auto">
+        <div 
+          className={`fixed bottom-0 left-0 w-full md:bottom-auto md:left-auto md:right-8 md:top-1/2 md:-translate-y-1/2 z-50 flex justify-end transition-transform duration-75 ${isDraggingToolbar ? 'opacity-90' : ''}`}
+          style={{ transform: `translate(${toolbarPos.x}px, ${toolbarPos.y}px)` }}
+        >
+          <div className="bg-slate-900/95 backdrop-blur-xl md:rounded-2xl border-t md:border border-fuchsia-500/30 shadow-2xl shadow-fuchsia-900/20 w-full md:w-[320px] max-h-[50vh] md:max-h-[90vh] overflow-y-auto flex flex-col">
+            
+            {/* Drag Handle */}
+            <div 
+              className="w-full flex justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing hover:bg-white/5 transition-colors touch-none"
+              onPointerDown={handleToolbarPointerDown}
+              onPointerMove={handleToolbarPointerMove}
+              onPointerUp={handleToolbarPointerUp}
+              onPointerCancel={handleToolbarPointerUp}
+            >
+              <div className="w-12 h-1.5 rounded-full bg-slate-600" />
+            </div>
+
             <PaintToolbar 
               brushColor={brushColor}
               setBrushColor={setBrushColor}
@@ -189,6 +235,8 @@ export default function GameContainer() {
               setBrushSize={setBrushSize}
               activeTool={activeTool}
               setActiveTool={setActiveTool}
+              rotation={rotation}
+              setRotation={setRotation}
               onSubmit={submitHide}
             />
           </div>
