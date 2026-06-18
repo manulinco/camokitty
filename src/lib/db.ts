@@ -14,6 +14,9 @@ export type HideEntry = {
   bgId?: string; // Background ID
   poseId?: string; // Pose SVG ID
   rotation?: number; // 0-359 degrees
+  rotationX?: number; // -180 to 180 degrees
+  rotationY?: number; // -180 to 180 degrees
+  scale?: number; // 0.5 to 3
   posLeft?: number; // percentage 0-100
   posTop?: number; // percentage 0-100
 };

@@ -123,6 +123,9 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
   const bgUrl = BACKGROUNDS.find(b => b.id === hideData.bgId)?.url || BACKGROUNDS[0].url;
   const posePath = POSES.find(p => p.id === hideData.poseId)?.path || POSES[0].path;
   const rotation = hideData.rotation || 0;
+  const rotationX = hideData.rotationX || 0;
+  const rotationY = hideData.rotationY || 0;
+  const scale = hideData.scale || 1;
   
   // Default to old fixed position if these are missing (for backward compatibility)
   const posLeft = hideData.posLeft !== undefined ? hideData.posLeft : 80; // approximate right-[20%]
@@ -157,7 +160,7 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
             top: `${posTop}%`,
             width: '25%',
             aspectRatio: '1 / 1',
-            transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+            transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`,
             filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none' 
           }}
           onClick={handleCatClick}

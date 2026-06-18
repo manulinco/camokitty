@@ -4,7 +4,7 @@ import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
   try {
-    const { paintData, bgId, poseId, rotation, posLeft, posTop } = await request.json();
+    const { paintData, bgId, poseId, rotation, rotationX, rotationY, scale, posLeft, posTop } = await request.json();
     
     if (!paintData) {
       return NextResponse.json({ success: false, error: 'Missing paintData' }, { status: 400 });
@@ -20,6 +20,9 @@ export async function POST(request: NextRequest) {
       bgId,
       poseId,
       rotation,
+      rotationX,
+      rotationY,
+      scale,
       posLeft,
       posTop,
       createdAt: Date.now(),

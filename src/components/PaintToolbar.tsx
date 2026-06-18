@@ -12,10 +12,25 @@ interface PaintToolbarProps {
   setActiveTool: (tool: 'paint' | 'move' | 'eraser') => void;
   rotation: number;
   setRotation: (r: number) => void;
+  rotationX: number;
+  setRotationX: (r: number) => void;
+  rotationY: number;
+  setRotationY: (r: number) => void;
+  scale: number;
+  setScale: (s: number) => void;
   onSubmit: () => void;
 }
 
-export default function PaintToolbar({ brushColor, setBrushColor, brushSize, setBrushSize, activeTool, setActiveTool, rotation, setRotation, onSubmit }: PaintToolbarProps) {
+export default function PaintToolbar({ 
+  brushColor, setBrushColor, 
+  brushSize, setBrushSize, 
+  activeTool, setActiveTool, 
+  rotation, setRotation, 
+  rotationX, setRotationX,
+  rotationY, setRotationY,
+  scale, setScale,
+  onSubmit 
+}: PaintToolbarProps) {
   const predefinedColors = [
     '#ffffff', '#000000', '#5c3a21', '#8b4513', '#d2691e', 
     '#cd853f', '#f4a460', '#ff8c00', '#228b22', '#006400',
@@ -80,20 +95,29 @@ export default function PaintToolbar({ brushColor, setBrushColor, brushSize, set
         />
       </div>
 
-      {/* Rotation Section */}
-      <div className="flex flex-col gap-3">
-        <div className="text-slate-400 font-semibold text-xs tracking-wider flex justify-between">
-          <span>ROTATION</span>
-          <span>{rotation}°</span>
+      {/* Transform Section */}
+      <div className="flex flex-col gap-4 bg-white/5 p-3 rounded-xl border border-white/10">
+        <div className="text-fuchsia-400 font-black text-xs tracking-widest">3D TRANSFORM</div>
+        
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400"><span>ROTATE Z (SPIN)</span><span>{rotation}°</span></div>
+          <input type="range" min="0" max="360" value={rotation} onChange={(e) => setRotation(parseInt(e.target.value))} className="w-full h-1.5 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer" />
         </div>
-        <input 
-          type="range" 
-          min="0" 
-          max="360" 
-          value={rotation}
-          onChange={(e) => setRotation(parseInt(e.target.value))}
-          className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
-        />
+
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400"><span>ROTATE X (PITCH)</span><span>{rotationX}°</span></div>
+          <input type="range" min="-80" max="80" value={rotationX} onChange={(e) => setRotationX(parseInt(e.target.value))} className="w-full h-1.5 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer" />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400"><span>ROTATE Y (YAW)</span><span>{rotationY}°</span></div>
+          <input type="range" min="-180" max="180" value={rotationY} onChange={(e) => setRotationY(parseInt(e.target.value))} className="w-full h-1.5 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer" />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400"><span>SCALE (SIZE)</span><span>{scale.toFixed(1)}x</span></div>
+          <input type="range" min="0.5" max="3" step="0.1" value={scale} onChange={(e) => setScale(parseFloat(e.target.value))} className="w-full h-1.5 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer" />
+        </div>
       </div>
 
       {/* Color Palette Section */}

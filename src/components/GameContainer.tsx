@@ -19,6 +19,9 @@ export default function GameContainer() {
   const [pos, setPos] = useState({ left: 50, top: 50 });
   const [isDragging, setIsDragging] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [rotationX, setRotationX] = useState(0);
+  const [rotationY, setRotationY] = useState(0);
+  const [scale, setScale] = useState(1);
 
   // Toolbar drag state
   const [toolbarPos, setToolbarPos] = useState({ x: 0, y: 0 });
@@ -101,7 +104,10 @@ export default function GameContainer() {
           paintData, 
           bgId: level.bg.id, 
           poseId: level.pose.id, 
-          rotation: rotation,
+          rotation,
+          rotationX,
+          rotationY,
+          scale,
           posLeft: pos.left,
           posTop: pos.top
         })
@@ -152,7 +158,7 @@ export default function GameContainer() {
             top: `${pos.top}%`,
             width: '25%',
             aspectRatio: '1 / 1',
-            transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+            transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`,
             touchAction: 'none'
           }}
           onPointerDown={handlePointerDown}
@@ -237,6 +243,12 @@ export default function GameContainer() {
               setActiveTool={setActiveTool}
               rotation={rotation}
               setRotation={setRotation}
+              rotationX={rotationX}
+              setRotationX={setRotationX}
+              rotationY={rotationY}
+              setRotationY={setRotationY}
+              scale={scale}
+              setScale={setScale}
               onSubmit={submitHide}
             />
           </div>
