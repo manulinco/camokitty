@@ -9,7 +9,10 @@ export interface PaintCanvasRef {
 interface PaintCanvasProps {
   brushColor: string;
   brushSize: number;
+  brushOpacity?: number; // 0 to 1
+  activeTool: 'paint' | 'move' | 'eraser';
   isDrawingEnabled: boolean;
+  isShapeLocked?: boolean;
   initialImageData?: string; // For Seeker mode
   showDecorations?: boolean;
   showShadow?: boolean;
@@ -20,7 +23,10 @@ interface PaintCanvasProps {
 const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({ 
   brushColor, 
   brushSize, 
-  isDrawingEnabled, 
+  brushOpacity = 1,
+  activeTool,
+  isDrawingEnabled,
+  isShapeLocked = true,
   initialImageData,
   showDecorations = false, // disabled by default for dynamic poses
   showShadow = true,
@@ -54,10 +60,19 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
     canvas.width = 250;
     canvas.height = 250;
 
-    // Fill with white initially if in Hider mode
+    // Draw initial state
     if (!initialImageData) {
+      // Clear the canvas to be fully transparent
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw the base cat silhouette as the starting stencil
+      const p = new Path2D(activePosePath);
       ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Scale from 100x100 viewBox to 250x250 canvas
+      ctx.scale(2.5, 2.5);
+      ctx.fill(p);
+      // Reset transform
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
     } else {
       // Draw initial image data if in Seeker mode
       const img = new Image();
@@ -122,26 +137,33 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
     const { x, y } = getCoordinates(e);
     const ctx = canvas.getContext('2d');
     if (ctx) {
+      ctx.globalAlpha = brushOpacity;
+      ctx.globalCompositeOperation = activeTool === 'eraser' ? 'destination-out' : 'source-over';
+      
       ctx.lineTo(x, y);
-      ctx.strokeStyle = brushColor;
+      ctx.strokeStyle = activeTool === 'eraser' ? '#ffffff' : brushColor;
       ctx.lineWidth = brushSize;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke();
+      
+      // Reset after stroke
+      ctx.globalAlpha = 1.0;
+      ctx.globalCompositeOperation = 'source-over';
     }
   };
 
   return (
     <div 
       className={`relative w-full h-full ${showShadow ? 'drop-shadow-2xl' : ''}`}
-      style={{
+      style={isShapeLocked ? {
         maskImage: `url('${catMaskUrl}')`,
         WebkitMaskImage: `url('${catMaskUrl}')`,
         maskSize: 'contain',
         WebkitMaskSize: 'contain',
         maskRepeat: 'no-repeat',
         WebkitMaskRepeat: 'no-repeat'
-      }}
+      } : {}}
     >
       <canvas
         ref={canvasRef}

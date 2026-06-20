@@ -1,29 +1,31 @@
 export const BACKGROUNDS = [
-  { 
-    id: 'bg-bar', 
-    name: 'Messy Bar',
-    url: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=1000&auto=format&fit=crop' 
-  },
-  { 
-    id: 'bg-room', 
-    name: 'Cluttered Bedroom',
-    url: 'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=1000&auto=format&fit=crop' 
-  },
-  { 
-    id: 'bg-jungle', 
-    name: 'Dense Jungle',
-    url: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1000&auto=format&fit=crop' 
-  },
-  { 
-    id: 'bg-neon', 
-    name: 'Cyberpunk Neon',
-    url: 'https://images.unsplash.com/photo-1555448248-2571daf6344b?q=80&w=1000&auto=format&fit=crop' 
-  },
-  { 
-    id: 'bg-leaves', 
-    name: 'Autumn Leaves',
-    url: 'https://images.unsplash.com/photo-1558244661-d248897f7bc4?q=80&w=1000&auto=format&fit=crop' 
-  },
+  // Anime
+  { id: 'doraemon-nobita-room', name: 'Nobita\'s Room', url: '/backgrounds/bg_doraemon.png' },
+  { id: 'spirited-away-boiler-room', name: 'Kamaji\'s Boiler Room', url: '/backgrounds/bg_spirited.png' },
+  { id: 'howls-moving-castle-bedroom', name: 'Howl\'s Bedroom', url: '/backgrounds/bg_howl.png' },
+  { id: 'naruto-ichiraku-ramen', name: 'Ichiraku Ramen', url: '/backgrounds/bg_naruto.png' },
+  { id: 'one-piece-thousand-sunny-deck', name: 'Thousand Sunny Deck', url: '/backgrounds/bg_onepiece.png' },
+  { id: 'attack-on-titan-shiganshina', name: 'Shiganshina District', url: '/backgrounds/bg_aot.png' },
+  { id: 'demon-slayer-infinity-castle', name: 'Infinity Castle', url: '/backgrounds/bg_demonslayer.png' },
+  
+  // Gaming
+  { id: 'cyberpunk-2077-night-city-street', name: 'Night City Street', url: '/backgrounds/bg_cyberpunk.png' },
+  { id: 'elden-ring-roundtable-hold', name: 'Roundtable Hold', url: '/backgrounds/bg_eldenring.png' },
+  { id: 'genshin-impact-mondstadt-tavern', name: 'Angel\'s Share Tavern', url: '/backgrounds/bg_genshin.png' },
+  { id: 'animal-crossing-nooks-cranny', name: 'Nook\'s Cranny', url: '/backgrounds/bg_animalcrossing.png' },
+  { id: 'stardew-valley-pierre-shop', name: 'Pierre\'s General Store', url: '/backgrounds/bg_stardew.png' },
+  { id: 'minecraft-villager-house', name: 'Villager House', url: '/backgrounds/bg_minecraft.png' },
+  { id: 'zelda-botw-link-house', name: 'Link\'s House', url: '/backgrounds/bg_zelda.png' },
+  
+  // Cartoons
+  { id: 'rick-and-morty-garage', name: 'Rick\'s Garage', url: '/backgrounds/bg_rickandmorty.png' },
+  { id: 'spongebob-pineapple-house', name: 'Pineapple House', url: '/backgrounds/bg_spongebob.png' },
+  { id: 'simpsons-living-room', name: 'Simpsons Living Room', url: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1000&auto=format&fit=crop' },
+  { id: 'gravity-falls-mystery-shack', name: 'Mystery Shack', url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1000&auto=format&fit=crop' },
+  
+  // Movies
+  { id: 'harry-potter-gryffindor-room', name: 'Gryffindor Common Room', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000&auto=format&fit=crop' },
+  { id: 'star-wars-millennium-falcon', name: 'Millennium Falcon Cockpit', url: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=1000&auto=format&fit=crop' }
 ];
 
 export const POSES = [
@@ -64,8 +66,15 @@ export const POSES = [
   }
 ];
 
-export function getRandomLevel() {
-  const bg = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
+export function getRandomLevel(bgId?: string) {
+  let bg;
+  if (bgId) {
+    bg = BACKGROUNDS.find(b => b.id === bgId);
+  }
+  if (!bg) {
+    bg = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)];
+  }
+  
   const pose = POSES[Math.floor(Math.random() * POSES.length)];
   const rotation = Math.floor(Math.random() * 360);
   return { bg, pose, rotation };

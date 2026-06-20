@@ -5,7 +5,7 @@ import PaintCanvas from './PaintCanvas';
 import { HideEntry } from '@/lib/db';
 import { BACKGROUNDS, POSES } from '@/lib/levels';
 
-export default function SeekerContainer({ challengeId }: { challengeId?: string }) {
+export default function SeekerContainer({ challengeId, bgId }: { challengeId?: string, bgId?: string }) {
   const [hideData, setHideData] = useState<HideEntry | null>(null);
   const [error, setError] = useState<string | null>(null);
   
@@ -24,8 +24,13 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
   const knockIdCounter = useRef<number>(0);
 
   useEffect(() => {
-    // Fetch hide data: either specific ID or random from global pool
-    const fetchUrl = challengeId ? `/api/hides?id=${challengeId}` : `/api/hides/random`;
+    // Fetch hide data: either specific ID or random from global pool/bgId
+    let fetchUrl = '/api/hides/random';
+    if (challengeId) {
+      fetchUrl = `/api/hides?id=${challengeId}`;
+    } else if (bgId) {
+      fetchUrl = `/api/hides/random?bgId=${bgId}`;
+    }
     
     fetch(fetchUrl)
       .then(res => res.json())
@@ -39,7 +44,7 @@ export default function SeekerContainer({ challengeId }: { challengeId?: string 
       .catch(err => {
         setError("Failed to connect to the Matrix.");
       });
-  }, [challengeId]);
+  }, [challengeId, bgId]);
 
   const startGame = () => {
     setIsPlaying(true);

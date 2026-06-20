@@ -8,6 +8,10 @@ interface PaintToolbarProps {
   setBrushColor: (c: string) => void;
   brushSize: number;
   setBrushSize: (s: number) => void;
+  brushOpacity?: number;
+  setBrushOpacity?: (o: number) => void;
+  isShapeLocked?: boolean;
+  setIsShapeLocked?: (l: boolean) => void;
   activeTool: 'paint' | 'move' | 'eraser';
   setActiveTool: (tool: 'paint' | 'move' | 'eraser') => void;
   rotation: number;
@@ -24,6 +28,8 @@ interface PaintToolbarProps {
 export default function PaintToolbar({ 
   brushColor, setBrushColor, 
   brushSize, setBrushSize, 
+  brushOpacity = 1, setBrushOpacity,
+  isShapeLocked = true, setIsShapeLocked,
   activeTool, setActiveTool, 
   rotation, setRotation, 
   rotationX, setRotationX,
@@ -68,31 +74,58 @@ export default function PaintToolbar({
           >
             <Eraser size={24} />
           </button>
-          <div className="relative group">
+          <button 
+            onClick={() => setIsShapeLocked && setIsShapeLocked(!isShapeLocked)}
+            className={`p-3 rounded-xl transition-colors ${isShapeLocked ? 'bg-amber-500/20 text-amber-400 border border-amber-500' : 'bg-green-500/20 text-green-400 border border-green-500'}`}
+            title="Toggle Shape Lock"
+          >
+            {isShapeLocked ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+            )}
+          </button>
+          
+          <div className="relative overflow-hidden rounded-xl border border-white/10 w-12 h-12 flex-shrink-0 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYNgDwEg1gBGJpeT7QY4BwaECDDXjB2gwQICRYcAoGjCMBgKjAQEAAAAP//4Q7P7QAAAAAElFTkSuQmCC')]">
             <input 
               type="color" 
               value={brushColor}
               onChange={(e) => setBrushColor(e.target.value)}
               className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
             />
-            <button className="p-3 bg-white/5 text-slate-400 border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
+            <button className="p-3 bg-white/5 text-slate-400 border border-white/10 rounded-xl hover:bg-white/10 transition-colors w-full h-full flex items-center justify-center">
               <Pipette size={24} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Brush Size Section */}
-      <div className="flex flex-col gap-3">
-        <div className="text-slate-400 font-semibold text-xs tracking-wider">BRUSH SIZE: {brushSize}px</div>
-        <input 
-          type="range" 
-          min="2" 
-          max="50" 
-          value={brushSize}
-          onChange={(e) => setBrushSize(parseInt(e.target.value))}
-          className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
-        />
+      {/* Brush Settings Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400 font-semibold tracking-wider"><span>BRUSH SIZE</span><span>{brushSize}px</span></div>
+          <input 
+            type="range" 
+            min="2" 
+            max="50" 
+            value={brushSize}
+            onChange={(e) => setBrushSize(parseInt(e.target.value))}
+            className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
+          />
+        </div>
+        
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between text-xs text-slate-400 font-semibold tracking-wider"><span>OPACITY</span><span>{Math.round(brushOpacity * 100)}%</span></div>
+          <input 
+            type="range" 
+            min="0" 
+            max="1" 
+            step="0.01"
+            value={brushOpacity}
+            onChange={(e) => setBrushOpacity && setBrushOpacity(parseFloat(e.target.value))}
+            className="w-full h-2 rounded-full appearance-none outline-none slider-thumb bg-slate-700 cursor-pointer mt-1"
+          />
+        </div>
       </div>
 
       {/* Transform Section */}

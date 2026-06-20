@@ -5,7 +5,7 @@ import PaintCanvas, { PaintCanvasRef } from './PaintCanvas';
 import PaintToolbar from './PaintToolbar';
 import { getRandomLevel } from '@/lib/levels';
 
-export default function GameContainer() {
+export default function GameContainer({ initialBgId }: { initialBgId?: string }) {
   const [isHidden, setIsHidden] = useState(false);
   const [shareId, setShareId] = useState<string | null>(null);
   const [level, setLevel] = useState<{ bg: any, pose: any, rotation: number } | null>(null);
@@ -14,6 +14,8 @@ export default function GameContainer() {
   const [activeTool, setActiveTool] = useState<'paint' | 'move' | 'eraser'>('paint');
   const [brushColor, setBrushColor] = useState('#ff00ff');
   const [brushSize, setBrushSize] = useState(15);
+  const [brushOpacity, setBrushOpacity] = useState(1);
+  const [isShapeLocked, setIsShapeLocked] = useState(true);
   
   // Cat Position State (percentages)
   const [pos, setPos] = useState({ left: 50, top: 50 });
@@ -32,10 +34,10 @@ export default function GameContainer() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const newLevel = getRandomLevel();
+    const newLevel = getRandomLevel(initialBgId);
     setLevel(newLevel);
     setRotation(newLevel.rotation);
-  }, []);
+  }, [initialBgId]);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (activeTool === 'move' && !isHidden) {
@@ -169,7 +171,10 @@ export default function GameContainer() {
             ref={canvasRef}
             brushColor={brushColor}
             brushSize={brushSize}
+            brushOpacity={brushOpacity}
+            activeTool={activeTool}
             isDrawingEnabled={activeTool === 'paint' || activeTool === 'eraser'}
+            isShapeLocked={isShapeLocked}
             posePath={level.pose.path}
             rotation={rotation}
           />
@@ -191,7 +196,7 @@ export default function GameContainer() {
               <p className="text-cyan-400 font-bold mb-3 text-xl">Dare Seekers to find you!</p>
               <p className="text-slate-400 text-sm mb-4">Copy this link and send it to your friends:</p>
               <code className="bg-black/50 px-4 py-3 rounded-lg text-fuchsia-300 select-all block text-lg font-mono border border-fuchsia-500/30">
-                {typeof window !== 'undefined' ? `${window.location.origin}/challenge/${shareId}` : ''}
+                {typeof window !== 'undefined' ? `${window.location.origin}/seeker/${level.bg.id}?id=${shareId}` : ''}
               </code>
             </div>
           )}
@@ -239,6 +244,10 @@ export default function GameContainer() {
               setBrushColor={setBrushColor}
               brushSize={brushSize}
               setBrushSize={setBrushSize}
+              brushOpacity={brushOpacity}
+              setBrushOpacity={setBrushOpacity}
+              isShapeLocked={isShapeLocked}
+              setIsShapeLocked={setIsShapeLocked}
               activeTool={activeTool}
               setActiveTool={setActiveTool}
               rotation={rotation}
