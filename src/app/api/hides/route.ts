@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { saveHide, getHideById, HideEntry, getHides } from '@/lib/db';
+import { saveHide, getHideById, HideEntry, recordSeekAttempt } from '@/lib/db';
 import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
@@ -30,10 +30,11 @@ export async function POST(request: NextRequest) {
       averageSeekTime: 0
     };
 
-    saveHide(entry);
+    await saveHide(entry);
 
     return NextResponse.json({ success: true, id: newId });
   } catch (error) {
+    console.error('POST /api/hides error:', error);
     return NextResponse.json({ success: false, error: 'Failed to save hide' }, { status: 500 });
   }
 }
@@ -46,7 +47,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ success: false, error: 'Missing id' }, { status: 400 });
   }
 
-  const hide = getHideById(id);
+  const hide = await getHideById(id);
   if (!hide) {
     return NextResponse.json({ success: false, error: 'Hide not found' }, { status: 404 });
   }
@@ -61,12 +62,11 @@ export async function PUT(req: Request) {
       return NextResponse.json({ success: false, error: 'Invalid data' }, { status: 400 });
     }
 
-    const { recordSeekAttempt } = await import('@/lib/db');
-    recordSeekAttempt(id, timeMs);
+    await recordSeekAttempt(id, timeMs);
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('PUT /api/hides error:', error);
     return NextResponse.json({ success: false, error: 'Failed to update seek time' }, { status: 500 });
   }
 }
-

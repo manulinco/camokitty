@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getHides } from '@/lib/db';
+import { getHides, getHidesByBgId } from '@/lib/db';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const bgId = searchParams.get('bgId');
   
-  let hides = getHides();
-  
+  let hides;
   if (bgId) {
-    hides = hides.filter(h => h.bgId === bgId);
+    hides = await getHidesByBgId(bgId);
+  } else {
+    hides = await getHides();
   }
   
   if (hides.length === 0) {

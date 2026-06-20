@@ -1,9 +1,10 @@
 import { getHides } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
 export default async function LeaderboardPage() {
   let leaderboard: Array<any> = [];
   try {
-    const hides = getHides();
+    const hides = await getHides();
     leaderboard = hides
       .filter(h => h.timesPlayed > 0)
       .sort((a, b) => b.averageSeekTime - a.averageSeekTime)

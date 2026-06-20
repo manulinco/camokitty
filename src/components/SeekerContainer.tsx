@@ -176,6 +176,7 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
                 brushColor="#000"
                 brushSize={1}
                 isDrawingEnabled={false}
+                activeTool="paint"
                 initialImageData={hideData.paintData}
                 showDecorations={found}
                 showShadow={false}

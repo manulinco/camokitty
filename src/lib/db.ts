@@ -1,63 +1,127 @@
-import fs from 'fs';
-import path from 'path';
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
-// Local JSON DB for MVP
-const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
-
-type ColorState = { h: number; s: number; b: number };
 export type HideEntry = {
   id: string;
   paintData: string; // Base64 png
   createdAt: number;
   timesPlayed: number;
   averageSeekTime: number; // in milliseconds
-  bgId?: string; // Background ID
-  poseId?: string; // Pose SVG ID
-  rotation?: number; // 0-359 degrees
-  rotationX?: number; // -180 to 180 degrees
-  rotationY?: number; // -180 to 180 degrees
-  scale?: number; // 0.5 to 3
-  posLeft?: number; // percentage 0-100
-  posTop?: number; // percentage 0-100
+  bgId?: string;
+  poseId?: string;
+  rotation?: number;
+  rotationX?: number;
+  rotationY?: number;
+  scale?: number;
+  posLeft?: number;
+  posTop?: number;
 };
 
-// Ensure data dir and db file exist
-function initDb() {
-  const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  if (!fs.existsSync(DB_PATH)) {
-    fs.writeFileSync(DB_PATH, JSON.stringify({ hides: [] }));
-  }
+// Row shape from D1 (snake_case)
+interface HideRow {
+  id: string;
+  paint_data: string;
+  bg_id: string | null;
+  pose_id: string | null;
+  rotation: number | null;
+  rotation_x: number | null;
+  rotation_y: number | null;
+  scale: number | null;
+  pos_left: number | null;
+  pos_top: number | null;
+  created_at: number;
+  times_played: number;
+  average_seek_time: number;
 }
 
-export function getHides(): HideEntry[] {
-  initDb();
-  const data = fs.readFileSync(DB_PATH, 'utf-8');
-  return JSON.parse(data).hides;
+function rowToEntry(row: HideRow): HideEntry {
+  return {
+    id: row.id,
+    paintData: row.paint_data,
+    createdAt: row.created_at,
+    timesPlayed: row.times_played,
+    averageSeekTime: row.average_seek_time,
+    bgId: row.bg_id ?? undefined,
+    poseId: row.pose_id ?? undefined,
+    rotation: row.rotation ?? undefined,
+    rotationX: row.rotation_x ?? undefined,
+    rotationY: row.rotation_y ?? undefined,
+    scale: row.scale ?? undefined,
+    posLeft: row.pos_left ?? undefined,
+    posTop: row.pos_top ?? undefined,
+  };
 }
 
-export function saveHide(entry: HideEntry) {
-  const hides = getHides();
-  hides.push(entry);
-  fs.writeFileSync(DB_PATH, JSON.stringify({ hides }, null, 2));
+async function getDb(): Promise<D1Database> {
+  const { env } = await getCloudflareContext();
+  return (env as any).DB as D1Database;
 }
 
-export function getHideById(id: string): HideEntry | undefined {
-  return getHides().find(h => h.id === id);
+export async function getHides(): Promise<HideEntry[]> {
+  const db = await getDb();
+  const { results } = await db
+    .prepare("SELECT * FROM hides ORDER BY created_at DESC")
+    .all<HideRow>();
+  return results.map(rowToEntry);
 }
 
-export function recordSeekAttempt(id: string, timeMs: number) {
-  const hides = getHides();
-  const hideIndex = hides.findIndex(h => h.id === id);
-  if (hideIndex === -1) return;
-
-  const hide = hides[hideIndex];
-  const newTotalTime = (hide.averageSeekTime * hide.timesPlayed) + timeMs;
-  hide.timesPlayed += 1;
-  hide.averageSeekTime = newTotalTime / hide.timesPlayed;
-
-  fs.writeFileSync(DB_PATH, JSON.stringify({ hides }, null, 2));
+export async function getHidesByBgId(bgId: string): Promise<HideEntry[]> {
+  const db = await getDb();
+  const { results } = await db
+    .prepare("SELECT * FROM hides WHERE bg_id = ? ORDER BY created_at DESC")
+    .bind(bgId)
+    .all<HideRow>();
+  return results.map(rowToEntry);
 }
 
+export async function saveHide(entry: HideEntry): Promise<void> {
+  const db = await getDb();
+  await db
+    .prepare(
+      `INSERT INTO hides (id, paint_data, bg_id, pose_id, rotation, rotation_x, rotation_y, scale, pos_left, pos_top, created_at, times_played, average_seek_time)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      entry.id,
+      entry.paintData,
+      entry.bgId ?? null,
+      entry.poseId ?? null,
+      entry.rotation ?? 0,
+      entry.rotationX ?? 0,
+      entry.rotationY ?? 0,
+      entry.scale ?? 1,
+      entry.posLeft ?? 50,
+      entry.posTop ?? 50,
+      entry.createdAt,
+      entry.timesPlayed,
+      entry.averageSeekTime
+    )
+    .run();
+}
+
+export async function getHideById(
+  id: string
+): Promise<HideEntry | undefined> {
+  const db = await getDb();
+  const row = await db
+    .prepare("SELECT * FROM hides WHERE id = ?")
+    .bind(id)
+    .first<HideRow>();
+  return row ? rowToEntry(row) : undefined;
+}
+
+export async function recordSeekAttempt(
+  id: string,
+  timeMs: number
+): Promise<void> {
+  const db = await getDb();
+  // Atomic update: calculate new average in SQL
+  await db
+    .prepare(
+      `UPDATE hides 
+       SET average_seek_time = (average_seek_time * times_played + ?) / (times_played + 1),
+           times_played = times_played + 1
+       WHERE id = ?`
+    )
+    .bind(timeMs, id)
+    .run();
+}

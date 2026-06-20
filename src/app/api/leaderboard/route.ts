@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getHides } from '@/lib/db';
 
 export async function GET() {
-  const hides = getHides();
+  const hides = await getHides();
   
   // Filter for hides that have been played at least once
   const validHides = hides.filter(h => h.timesPlayed > 0);
