@@ -23,6 +23,7 @@ interface PaintToolbarProps {
   scale: number;
   setScale: (s: number) => void;
   onSubmit: () => void;
+  onRandomizeLevel?: () => void;
 }
 
 export default function PaintToolbar({ 
@@ -35,7 +36,7 @@ export default function PaintToolbar({
   rotationX, setRotationX,
   rotationY, setRotationY,
   scale, setScale,
-  onSubmit 
+  onSubmit, onRandomizeLevel
 }: PaintToolbarProps) {
   const predefinedColors = [
     '#ffffff', '#000000', '#5c3a21', '#8b4513', '#d2691e', 
@@ -173,6 +174,12 @@ export default function PaintToolbar({
         <p className="text-slate-500 text-xs hidden md:block">
           Tip: Draw patterns that match the background texture to break the silhouette!
         </p>
+        <button 
+          onClick={onRandomizeLevel}
+          className="bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500 px-6 py-2 rounded-xl font-bold hover:bg-fuchsia-500 hover:text-white transition-colors"
+        >
+          Change Background
+        </button>
         <button 
           onClick={onSubmit}
           className="bg-cyan-500 text-black px-6 py-3 rounded-full font-black text-lg hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all flex items-center justify-center gap-2"
