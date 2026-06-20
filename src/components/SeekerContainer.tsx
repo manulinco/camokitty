@@ -118,7 +118,24 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
   };
 
   if (error) {
-    return <div className="text-red-500 font-bold text-2xl flex h-screen items-center justify-center">Challenge not found!</div>;
+    return (
+      <div className="flex flex-col h-screen items-center justify-center bg-[#0a0a0a] text-center px-4">
+        <h2 className="text-3xl md:text-5xl font-black text-fuchsia-500 mb-6 drop-shadow-[0_0_15px_rgba(217,70,239,0.3)]">
+          {error === 'No challenges available for this scene yet!' ? 'NO CHALLENGES YET!' : 'CHALLENGE NOT FOUND!'}
+        </h2>
+        <p className="text-slate-400 mb-8 text-lg max-w-md">
+          {error === 'No challenges available for this scene yet!' 
+            ? "It looks like nobody has hidden a cat here yet. Be the first to deploy a camouflage!"
+            : "The challenge you're looking for doesn't exist or has expired."}
+        </p>
+        <a 
+          href="/create"
+          className="bg-cyan-500 text-black px-8 py-4 rounded-full font-black text-xl hover:bg-cyan-400 transition-colors shadow-[0_0_20px_rgba(34,211,238,0.4)]"
+        >
+          CREATE MY OWN HIDE
+        </a>
+      </div>
+    );
   }
 
   if (!hideData) {
