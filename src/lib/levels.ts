@@ -20,12 +20,9 @@ export const BACKGROUNDS = [
   // Cartoons
   { id: 'rick-and-morty-garage', name: 'Rick\'s Garage', url: '/backgrounds/bg_rickandmorty.png' },
   { id: 'spongebob-pineapple-house', name: 'Pineapple House', url: '/backgrounds/bg_spongebob.png' },
-  { id: 'simpsons-living-room', name: 'Simpsons Living Room', url: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=1000&auto=format&fit=crop' },
-  { id: 'gravity-falls-mystery-shack', name: 'Mystery Shack', url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1000&auto=format&fit=crop' },
   
-  // Movies
-  { id: 'harry-potter-gryffindor-room', name: 'Gryffindor Common Room', url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1000&auto=format&fit=crop' },
-  { id: 'star-wars-millennium-falcon', name: 'Millennium Falcon Cockpit', url: 'https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?q=80&w=1000&auto=format&fit=crop' }
+  // Sci-Fi & Mecha
+  { id: 'mecha-chameleon-base', name: 'Mecha Chameleon Base', url: '/backgrounds/bg_mechachameleon.png' }
 ];
 
 export const POSES = [
