@@ -1,54 +1,22 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 export default function FloatingNav() {
-  const pathname = usePathname();
-
-  // If we are on a specific challenge page, we might want to highlight "SEEK"
-  const isSeekActive = pathname === '/' || pathname.startsWith('/challenge');
-  const isHideActive = pathname === '/create';
-  const isRankActive = pathname === '/leaderboard';
-
   return (
-    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1 bg-black/60 backdrop-blur-xl p-1.5 rounded-full border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
-        
-        <Link 
-          href="/" 
-          className={`px-6 py-2.5 rounded-full text-sm font-black tracking-widest transition-all duration-300 ${
-            isSeekActive 
-              ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)] scale-105' 
-              : 'text-slate-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          🔍 SEEK
-        </Link>
-
-        <Link 
-          href="/create" 
-          className={`px-6 py-2.5 rounded-full text-sm font-black tracking-widest transition-all duration-300 ${
-            isHideActive 
-              ? 'bg-cyan-500 text-black shadow-[0_0_20px_rgba(6,182,212,0.3)] scale-105' 
-              : 'text-slate-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          🎨 HIDE
-        </Link>
-
-        <Link 
-          href="/leaderboard" 
-          className={`px-6 py-2.5 rounded-full text-sm font-black tracking-widest transition-all duration-300 ${
-            isRankActive 
-              ? 'bg-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.3)] scale-105' 
-              : 'text-slate-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          🏆 RANK
-        </Link>
-
-      </div>
+    <div className="fixed top-4 left-4 md:top-6 md:left-6 z-50">
+      <Link 
+        href="/" 
+        className="flex items-center gap-3 bg-black/60 backdrop-blur-xl pl-2 pr-4 py-2 rounded-full border border-white/10 shadow-[0_5px_20px_rgba(0,0,0,0.5)] hover:bg-black/80 hover:scale-105 transition-all duration-300 group"
+      >
+        <div className="w-8 h-8 relative rounded-full overflow-hidden border border-fuchsia-500/30 group-hover:border-fuchsia-500 transition-colors">
+          <Image src="/logo.png" alt="Camo Kitty" fill className="object-cover" />
+        </div>
+        <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-400 tracking-widest text-sm">
+          CAMO KITTY
+        </span>
+      </Link>
     </div>
   );
 }
