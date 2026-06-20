@@ -259,6 +259,11 @@ export default function GameContainer({ initialBgId }: { initialBgId?: string })
               scale={scale}
               setScale={setScale}
               onSubmit={submitHide}
+              onRandomizeLevel={() => {
+                const newLevel = getRandomLevel();
+                setLevel(newLevel);
+                setRotation(newLevel.rotation);
+              }}
             />
           </div>
         </div>
