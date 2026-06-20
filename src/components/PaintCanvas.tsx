@@ -69,34 +69,32 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
     }
   }, [initialImageData]);
 
-  const getCoordinates = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const getCoordinates = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
     
-    let clientX, clientY;
-    if ('touches' in e) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = (e as React.MouseEvent).clientX;
-      clientY = (e as React.MouseEvent).clientY;
-    }
+    // offsetX/offsetY perfectly handles CSS 3D transforms because they are computed relative to the element's layout box!
+    const offsetX = e.nativeEvent.offsetX;
+    const offsetY = e.nativeEvent.offsetY;
     
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    // Map CSS layout pixels to internal canvas rendering resolution
+    const scaleX = canvas.width / canvas.clientWidth;
+    const scaleY = canvas.height / canvas.clientHeight;
     
     return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY
+      x: offsetX * scaleX,
+      y: offsetY * scaleY
     };
   };
 
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const startDrawing = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawingEnabled) return;
     setIsDrawing(true);
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
+    // Prevent default pointer behavior like scrolling while drawing
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
     
     const { x, y } = getCoordinates(e);
     const ctx = canvas.getContext('2d');
@@ -106,15 +104,17 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
     }
   };
 
-  const stopDrawing = () => {
+  const stopDrawing = (e: React.PointerEvent<HTMLCanvasElement>) => {
     setIsDrawing(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (ctx) ctx.beginPath(); // Reset path so next line doesn't connect
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+  const draw = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawingEnabled || !isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -145,14 +145,11 @@ const PaintCanvas = forwardRef<PaintCanvasRef, PaintCanvasProps>(({
     >
       <canvas
         ref={canvasRef}
-        onMouseDown={startDrawing}
-        onMouseUp={stopDrawing}
-        onMouseOut={stopDrawing}
-        onMouseMove={draw}
-        onTouchStart={startDrawing}
-        onTouchEnd={stopDrawing}
-        onTouchMove={draw}
-        className={`w-full h-full ${isDrawingEnabled ? 'cursor-crosshair' : 'cursor-pointer'}`}
+        onPointerDown={startDrawing}
+        onPointerUp={stopDrawing}
+        onPointerOut={stopDrawing}
+        onPointerMove={draw}
+        className={`w-full h-full touch-none ${isDrawingEnabled ? 'cursor-crosshair' : 'cursor-pointer'}`}
       />
       
       {/* Decorative lines (eyes, ears) drawn OVER the canvas */}
