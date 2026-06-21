@@ -18,7 +18,8 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
   const [isStunned, setIsStunned] = useState(false);
   const [hitCount, setHitCount] = useState(0);
   const [knockFeedback, setKnockFeedback] = useState<{x: number, y: number, id: number}[]>([]);
-  
+  const [bgLoaded, setBgLoaded] = useState(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const lastHitTimeRef = useRef<number>(0);
   const knockIdCounter = useRef<number>(0);
@@ -153,6 +154,17 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
   const posLeft = hideData.posLeft !== undefined ? hideData.posLeft : 80; // approximate right-[20%]
   const posTop = hideData.posTop !== undefined ? hideData.posTop : 90; // approximate bottom-[10%]
 
+  // Preload background image
+  useEffect(() => {
+    if (bgUrl) {
+      setBgLoaded(false);
+      const img = new Image();
+      img.src = bgUrl;
+      img.onload = () => setBgLoaded(true);
+      img.onerror = () => setBgLoaded(true); // Fallback
+    }
+  }, [bgUrl]);
+
   return (
     <div className="w-full max-w-4xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
       
@@ -234,9 +246,10 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
             </p>
             <button 
               onClick={startGame}
-              className="bg-cyan-500 text-black px-12 py-4 rounded-full font-black text-2xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(34,211,238,0.4)]"
+              disabled={!bgLoaded}
+              className={`px-12 py-4 rounded-full font-black text-2xl transition-transform ${bgLoaded ? 'bg-cyan-500 text-black hover:scale-105 shadow-[0_0_30px_rgba(34,211,238,0.4)]' : 'bg-slate-700 text-slate-400 cursor-not-allowed'}`}
             >
-              START SEEKING
+              {bgLoaded ? 'START SEEKING' : 'LOADING MAP...'}
             </button>
           </div>
         )}

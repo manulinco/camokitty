@@ -1,8 +1,8 @@
 export const BACKGROUNDS = [
-  { id: 'genshin-impact', name: 'Genshin Impact', url: '/backgrounds/bg_genshin_v2.png' },
-  { id: 'zelda-botw', name: 'Zelda Breath of the Wild', url: '/backgrounds/bg_zelda_v2.png' },
-  { id: 'minecraft', name: 'Minecraft', url: '/backgrounds/bg_minecraft_v2.png' },
-  { id: 'animal-crossing', name: 'Animal Crossing', url: '/backgrounds/bg_animalcrossing_v2.png' },
+  { id: 'genshin-impact', name: 'Genshin Impact', url: '/backgrounds/bg_genshin_v2.jpg' },
+  { id: 'zelda-botw', name: 'Zelda Breath of the Wild', url: '/backgrounds/bg_zelda_v2.jpg' },
+  { id: 'minecraft', name: 'Minecraft', url: '/backgrounds/bg_minecraft_v2.jpg' },
+  { id: 'animal-crossing', name: 'Animal Crossing', url: '/backgrounds/bg_animalcrossing_v2.jpg' },
   { id: 'mecha-chameleon-base', name: 'Mecha Chameleon Base', url: '/backgrounds/bg_mechachameleon.png' }
 ];
 
