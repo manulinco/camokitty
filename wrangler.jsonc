@@ -24,11 +24,10 @@
 		// see https://opennext.js.org/cloudflare/howtos/image
 		"binding": "IMAGES"
 	},
-	"d1_databases": [
+	"r2_buckets": [
 		{
-			"binding": "DB",
-			"database_name": "camo-kitty-db",
-			"database_id": "a8f32628-89c6-418d-867e-f3285fb5c499"
+			"binding": "CAMO_IMAGES",
+			"bucket_name": "camo-kitty-images"
 		}
 	]
 }

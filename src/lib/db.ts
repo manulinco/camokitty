@@ -17,115 +17,61 @@ export type HideEntry = {
   similarityScore?: number;
 };
 
-// Row shape from D1 (snake_case)
-interface HideRow {
-  id: string;
-  paint_data: string;
-  bg_id: string | null;
-  pose_id: string | null;
-  rotation: number | null;
-  rotation_x: number | null;
-  rotation_y: number | null;
-  scale: number | null;
-  pos_left: number | null;
-  pos_top: number | null;
-  created_at: number;
-  times_played: number;
-  average_seek_time: number;
-  similarity_score: number | null;
-}
-
-function rowToEntry(row: HideRow): HideEntry {
-  return {
-    id: row.id,
-    paintData: row.paint_data,
-    createdAt: row.created_at,
-    timesPlayed: row.times_played,
-    averageSeekTime: row.average_seek_time,
-    bgId: row.bg_id ?? undefined,
-    poseId: row.pose_id ?? undefined,
-    rotation: row.rotation ?? undefined,
-    rotationX: row.rotation_x ?? undefined,
-    rotationY: row.rotation_y ?? undefined,
-    scale: row.scale ?? undefined,
-    posLeft: row.pos_left ?? undefined,
-    posTop: row.pos_top ?? undefined,
-    similarityScore: row.similarity_score ?? undefined,
-  };
-}
-
-async function getDb(): Promise<D1Database> {
+async function getR2(): Promise<R2Bucket> {
   const { env } = await getCloudflareContext();
-  return (env as any).DB as D1Database;
+  return (env as any).CAMO_IMAGES as R2Bucket;
 }
 
 export async function getHides(): Promise<HideEntry[]> {
-  const db = await getDb();
-  const { results } = await db
-    .prepare("SELECT * FROM hides ORDER BY created_at DESC")
-    .all<HideRow>();
-  return results.map(rowToEntry);
+  const r2 = await getR2();
+  const list = await r2.list({ prefix: 'hide_' });
+  
+  const entries: HideEntry[] = [];
+  for (const obj of list.objects) {
+    const file = await r2.get(obj.key);
+    if (file) {
+      const data = await file.text();
+      try {
+        entries.push(JSON.parse(data) as HideEntry);
+      } catch(e) {}
+    }
+  }
+  return entries.sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export async function getHidesByBgId(bgId: string): Promise<HideEntry[]> {
-  const db = await getDb();
-  const { results } = await db
-    .prepare("SELECT * FROM hides WHERE bg_id = ? ORDER BY created_at DESC")
-    .bind(bgId)
-    .all<HideRow>();
-  return results.map(rowToEntry);
+  const hides = await getHides();
+  return hides.filter(h => h.bgId === bgId);
 }
 
 export async function saveHide(entry: HideEntry): Promise<void> {
-  const db = await getDb();
-  await db
-    .prepare(
-      `INSERT INTO hides (id, paint_data, bg_id, pose_id, rotation, rotation_x, rotation_y, scale, pos_left, pos_top, created_at, times_played, average_seek_time, similarity_score)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-    .bind(
-      entry.id,
-      entry.paintData,
-      entry.bgId ?? null,
-      entry.poseId ?? null,
-      entry.rotation ?? 0,
-      entry.rotationX ?? 0,
-      entry.rotationY ?? 0,
-      entry.scale ?? 1,
-      entry.posLeft ?? 50,
-      entry.posTop ?? 50,
-      entry.createdAt,
-      entry.timesPlayed,
-      entry.averageSeekTime,
-      entry.similarityScore ?? 0
-    )
-    .run();
+  const r2 = await getR2();
+  const key = `hide_${entry.id}.json`;
+  await r2.put(key, JSON.stringify(entry), {
+    httpMetadata: { contentType: 'application/json' }
+  });
 }
 
-export async function getHideById(
-  id: string
-): Promise<HideEntry | undefined> {
-  const db = await getDb();
-  const row = await db
-    .prepare("SELECT * FROM hides WHERE id = ?")
-    .bind(id)
-    .first<HideRow>();
-  return row ? rowToEntry(row) : undefined;
+export async function getHideById(id: string): Promise<HideEntry | undefined> {
+  const r2 = await getR2();
+  const key = `hide_${id}.json`;
+  const file = await r2.get(key);
+  if (!file) return undefined;
+  
+  const data = await file.text();
+  try {
+    return JSON.parse(data) as HideEntry;
+  } catch(e) {
+    return undefined;
+  }
 }
 
-export async function recordSeekAttempt(
-  id: string,
-  timeMs: number
-): Promise<void> {
-  const db = await getDb();
-  // Atomic update: calculate new average in SQL
-  await db
-    .prepare(
-      `UPDATE hides 
-       SET average_seek_time = (average_seek_time * times_played + ?) / (times_played + 1),
-           times_played = times_played + 1
-       WHERE id = ?`
-    )
-    .bind(timeMs, id)
-    .run();
+export async function recordSeekAttempt(id: string, timeMs: number): Promise<void> {
+  const entry = await getHideById(id);
+  if (!entry) return;
+  
+  entry.averageSeekTime = (entry.averageSeekTime * entry.timesPlayed + timeMs) / (entry.timesPlayed + 1);
+  entry.timesPlayed += 1;
+  
+  await saveHide(entry);
 }
