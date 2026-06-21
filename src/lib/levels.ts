@@ -1,27 +1,11 @@
 export const BACKGROUNDS = [
-  // Anime
-  { id: 'doraemon-nobita-room', name: 'Nobita\'s Room', url: '/backgrounds/bg_doraemon.png' },
-  { id: 'spirited-away-boiler-room', name: 'Kamaji\'s Boiler Room', url: '/backgrounds/bg_spirited.png' },
-  { id: 'howls-moving-castle-bedroom', name: 'Howl\'s Bedroom', url: '/backgrounds/bg_howl.png' },
-  { id: 'naruto-ichiraku-ramen', name: 'Ichiraku Ramen', url: '/backgrounds/bg_naruto.png' },
-  { id: 'one-piece-thousand-sunny-deck', name: 'Thousand Sunny Deck', url: '/backgrounds/bg_onepiece.png' },
-  { id: 'attack-on-titan-shiganshina', name: 'Shiganshina District', url: '/backgrounds/bg_aot.png' },
-  { id: 'demon-slayer-infinity-castle', name: 'Infinity Castle', url: '/backgrounds/bg_demonslayer.png' },
+  // Realistic
+  { id: 'bg-livingroom', name: 'Messy Living Room', url: '/backgrounds/bg_livingroom.png' },
+  { id: 'bg-bookshelf', name: 'Wooden Bookshelf', url: '/backgrounds/bg_bookshelf.png' },
+  { id: 'bg-kitchen', name: 'Kitchen Counter', url: '/backgrounds/bg_kitchen.png' },
+  { id: 'bg-park', name: 'Autumn Park', url: '/backgrounds/bg_park.png' },
   
-  // Gaming
-  { id: 'cyberpunk-2077-night-city-street', name: 'Night City Street', url: '/backgrounds/bg_cyberpunk.png' },
-  { id: 'elden-ring-roundtable-hold', name: 'Roundtable Hold', url: '/backgrounds/bg_eldenring.png' },
-  { id: 'genshin-impact-mondstadt-tavern', name: 'Angel\'s Share Tavern', url: '/backgrounds/bg_genshin.png' },
-  { id: 'animal-crossing-nooks-cranny', name: 'Nook\'s Cranny', url: '/backgrounds/bg_animalcrossing.png' },
-  { id: 'stardew-valley-pierre-shop', name: 'Pierre\'s General Store', url: '/backgrounds/bg_stardew.png' },
-  { id: 'minecraft-villager-house', name: 'Villager House', url: '/backgrounds/bg_minecraft.png' },
-  { id: 'zelda-botw-link-house', name: 'Link\'s House', url: '/backgrounds/bg_zelda.png' },
-  
-  // Cartoons
-  { id: 'rick-and-morty-garage', name: 'Rick\'s Garage', url: '/backgrounds/bg_rickandmorty.png' },
-  { id: 'spongebob-pineapple-house', name: 'Pineapple House', url: '/backgrounds/bg_spongebob.png' },
-  
-  // Sci-Fi & Mecha
+  // Keep one mecha chameleon as user asked for it before
   { id: 'mecha-chameleon-base', name: 'Mecha Chameleon Base', url: '/backgrounds/bg_mechachameleon.png' }
 ];
 

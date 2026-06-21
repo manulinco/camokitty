@@ -33,7 +33,7 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
     }
     
     fetch(fetchUrl)
-      .then(res => res.json())
+      .then(res => res.json() as any)
       .then(data => {
         if (data.success) {
           setHideData(data.hide);
@@ -183,7 +183,7 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
             width: '25%',
             aspectRatio: '1 / 1',
             transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`,
-            filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none' 
+            filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none'
           }}
           onClick={handleCatClick}
         >

@@ -14,6 +14,7 @@ export type HideEntry = {
   scale?: number;
   posLeft?: number;
   posTop?: number;
+  similarityScore?: number;
 };
 
 // Row shape from D1 (snake_case)
@@ -31,6 +32,7 @@ interface HideRow {
   created_at: number;
   times_played: number;
   average_seek_time: number;
+  similarity_score: number | null;
 }
 
 function rowToEntry(row: HideRow): HideEntry {
@@ -48,6 +50,7 @@ function rowToEntry(row: HideRow): HideEntry {
     scale: row.scale ?? undefined,
     posLeft: row.pos_left ?? undefined,
     posTop: row.pos_top ?? undefined,
+    similarityScore: row.similarity_score ?? undefined,
   };
 }
 
@@ -77,8 +80,8 @@ export async function saveHide(entry: HideEntry): Promise<void> {
   const db = await getDb();
   await db
     .prepare(
-      `INSERT INTO hides (id, paint_data, bg_id, pose_id, rotation, rotation_x, rotation_y, scale, pos_left, pos_top, created_at, times_played, average_seek_time)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO hides (id, paint_data, bg_id, pose_id, rotation, rotation_x, rotation_y, scale, pos_left, pos_top, created_at, times_played, average_seek_time, similarity_score)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
     .bind(
       entry.id,
@@ -93,7 +96,8 @@ export async function saveHide(entry: HideEntry): Promise<void> {
       entry.posTop ?? 50,
       entry.createdAt,
       entry.timesPlayed,
-      entry.averageSeekTime
+      entry.averageSeekTime,
+      entry.similarityScore ?? 0
     )
     .run();
 }

@@ -30,5 +30,11 @@
 			"database_name": "camo-kitty-db",
 			"database_id": "e2144d2a-ce7a-4936-92dc-53e532fc0d57"
 		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "CAMO_IMAGES",
+			"bucket_name": "camo-kitty-images"
+		}
 	]
 }

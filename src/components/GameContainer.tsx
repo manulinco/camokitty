@@ -90,12 +90,87 @@ export default function GameContainer({ initialBgId }: { initialBgId?: string })
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
   };
 
+  const checkSimilarity = async (): Promise<number> => {
+    if (!canvasRef.current || !containerRef.current || !level) return 0;
+    
+    const paintCanvasDataUrl = canvasRef.current.getBase64();
+    const paintImg = new Image();
+    paintImg.src = paintCanvasDataUrl;
+    await new Promise(resolve => { paintImg.onload = resolve; });
+
+    const cWidth = 800;
+    const cHeight = 600;
+    
+    const bgCanvas = document.createElement('canvas');
+    bgCanvas.width = cWidth;
+    bgCanvas.height = cHeight;
+    const bgCtx = bgCanvas.getContext('2d');
+    if (!bgCtx) return 0;
+    
+    const bgImg = new Image();
+    bgImg.src = level.bg.url;
+    await new Promise(resolve => { bgImg.onload = resolve; });
+    
+    // Draw background cover
+    const imgRatio = bgImg.width / bgImg.height;
+    const canvasRatio = cWidth / cHeight;
+    let sWidth = bgImg.width, sHeight = bgImg.height, sx = 0, sy = 0;
+    if (imgRatio > canvasRatio) {
+      sWidth = bgImg.height * canvasRatio;
+      sx = (bgImg.width - sWidth) / 2;
+    } else {
+      sHeight = bgImg.width / canvasRatio;
+      sy = (bgImg.height - sHeight) / 2;
+    }
+    bgCtx.drawImage(bgImg, sx, sy, sWidth, sHeight, 0, 0, cWidth, cHeight); 
+    
+    const targetWidth = cWidth * 0.25 * scale;
+    const targetHeight = cWidth * 0.25 * scale;
+    const centerX = cWidth * (pos.left / 100);
+    const centerY = cHeight * (pos.top / 100);
+    
+    const catCanvas = document.createElement('canvas');
+    catCanvas.width = cWidth;
+    catCanvas.height = cHeight;
+    const catCtx = catCanvas.getContext('2d')!;
+    
+    catCtx.translate(centerX, centerY);
+    catCtx.rotate(rotation * Math.PI / 180);
+    catCtx.drawImage(paintImg, -targetWidth/2, -targetHeight/2, targetWidth, targetHeight);
+    
+    const bgData = bgCtx.getImageData(0, 0, cWidth, cHeight).data;
+    const catData = catCtx.getImageData(0, 0, cWidth, cHeight).data;
+    
+    let totalPaintedPixels = 0;
+    let totalSimilarity = 0;
+    
+    for (let i = 0; i < catData.length; i += 4) {
+      const alpha = catData[i + 3];
+      if (alpha > 50) { 
+        totalPaintedPixels++;
+        const r1 = catData[i], g1 = catData[i+1], b1 = catData[i+2];
+        const r2 = bgData[i], g2 = bgData[i+1], b2 = bgData[i+2];
+        
+        const diff = Math.sqrt(Math.pow(r1-r2, 2) + Math.pow(g1-g2, 2) + Math.pow(b1-b2, 2));
+        const similarity = 1 - (diff / 441.67);
+        totalSimilarity += similarity;
+      }
+    }
+    
+    if (totalPaintedPixels < 100) return 0;
+    
+    return (totalSimilarity / totalPaintedPixels) * 100; 
+  };
+
   const submitHide = async () => {
     if (!canvasRef.current || !level) return;
     
-    // Get the base64 painted image
+    const simScore = await checkSimilarity();
+    if (simScore < 30) {
+      alert(`Your camouflage similarity is ${simScore.toFixed(1)}% (below 30%). You can still deploy, but it won't be featured in the global challenge pool until you improve it!`);
+    }
+
     const paintData = canvasRef.current.getBase64();
-    
     setIsHidden(true);
 
     try {
@@ -111,15 +186,21 @@ export default function GameContainer({ initialBgId }: { initialBgId?: string })
           rotationY,
           scale,
           posLeft: pos.left,
-          posTop: pos.top
+          posTop: pos.top,
+          simScore
         })
       });
-      const data = await res.json();
+      const data = await res.json() as any;
       if (data.success) {
         setShareId(data.id);
+      } else {
+        alert(`Failed to save hide: ${data.error || 'Unknown error'}`);
+        setIsHidden(false); // Let them try again
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save hide", err);
+      alert(`Network or Server error: ${err.message || 'Check your R2 Bucket or D1 Database'}`);
+      setIsHidden(false);
     }
   };
 

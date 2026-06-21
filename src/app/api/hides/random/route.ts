@@ -12,13 +12,16 @@ export async function GET(request: Request) {
     hides = await getHides();
   }
   
-  if (hides.length === 0) {
+  // Filter out low quality hides (similarity < 30)
+  const validHides = hides.filter(h => (h.similarityScore || 0) >= 30);
+  
+  if (validHides.length === 0) {
     return NextResponse.json({ success: false, error: 'No challenges available for this scene yet!' }, { status: 404 });
   }
 
   // Simple random selection
-  const randomIndex = Math.floor(Math.random() * hides.length);
-  const randomHide = hides[randomIndex];
+  const randomIndex = Math.floor(Math.random() * validHides.length);
+  const randomHide = validHides[randomIndex];
 
   return NextResponse.json({ success: true, hide: randomHide });
 }
