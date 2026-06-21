@@ -1,11 +1,8 @@
 export const BACKGROUNDS = [
-  // Realistic
-  { id: 'bg-livingroom', name: 'Messy Living Room', url: '/backgrounds/bg_livingroom.png' },
-  { id: 'bg-bookshelf', name: 'Wooden Bookshelf', url: '/backgrounds/bg_bookshelf.png' },
-  { id: 'bg-kitchen', name: 'Kitchen Counter', url: '/backgrounds/bg_kitchen.png' },
-  { id: 'bg-park', name: 'Autumn Park', url: '/backgrounds/bg_park.png' },
-  
-  // Keep one mecha chameleon as user asked for it before
+  { id: 'genshin-impact', name: 'Genshin Impact Landscape', url: '/backgrounds/bg_genshin.png' },
+  { id: 'zelda-botw', name: 'Zelda Breath of the Wild', url: '/backgrounds/bg_zelda.png' },
+  { id: 'minecraft', name: 'Minecraft Forest', url: '/backgrounds/bg_minecraft.png' },
+  { id: 'animal-crossing', name: 'Animal Crossing Room', url: '/backgrounds/bg_animalcrossing.png' },
   { id: 'mecha-chameleon-base', name: 'Mecha Chameleon Base', url: '/backgrounds/bg_mechachameleon.png' }
 ];
 
