@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getHides, getHidesByBgId } from '@/lib/db';
+import { BACKGROUNDS } from '@/lib/levels';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,8 +13,9 @@ export async function GET(request: Request) {
     hides = await getHides();
   }
   
-  // Filter out low quality hides (similarity < 30)
-  const validHides = hides.filter(h => (h.similarityScore || 0) >= 30);
+  // Filter out low quality hides (similarity < 30) and ensure the background still exists in our active list
+  const validBgIds = BACKGROUNDS.map(b => b.id);
+  const validHides = hides.filter(h => (h.similarityScore || 0) >= 30 && validBgIds.includes(h.bgId || ''));
   
   if (validHides.length === 0) {
     return NextResponse.json({ success: false, error: 'No challenges available for this scene yet!' }, { status: 404 });
