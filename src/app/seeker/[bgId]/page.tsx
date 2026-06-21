@@ -8,11 +8,6 @@ export default function SeekerPage() {
   const params = useParams<{ bgId: string }>();
   const bgId = params.bgId;
 
-  const bgExists = BACKGROUNDS.some(b => b.id === bgId);
-  if (!bgExists) {
-    notFound();
-  }
-
   const searchParams = useSearchParams();
   const challengeId = searchParams.get('id') || undefined;
 

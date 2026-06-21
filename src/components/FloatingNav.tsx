@@ -21,9 +21,9 @@ export default function FloatingNav() {
       <div className="flex bg-black/60 backdrop-blur-xl rounded-full border border-white/10 p-1 shadow-[0_5px_20px_rgba(0,0,0,0.5)] overflow-x-auto max-w-full no-scrollbar">
         <Link href="/" className="px-4 py-2 text-xs md:text-sm font-bold text-white hover:text-cyan-400 whitespace-nowrap">PLAY</Link>
         <div className="w-[1px] bg-white/20 my-2"></div>
-        <Link href="/create" className="px-4 py-2 text-xs md:text-sm font-bold text-white hover:text-fuchsia-400 whitespace-nowrap">CREATE</Link>
+        <Link href="/create" className="px-4 py-2 text-xs md:text-sm font-bold text-white hover:text-fuchsia-400 whitespace-nowrap">HIDER</Link>
         <div className="w-[1px] bg-white/20 my-2"></div>
-        <Link href="/leaderboard" className="px-4 py-2 text-xs md:text-sm font-bold text-white hover:text-yellow-400 whitespace-nowrap">LEADERBOARD</Link>
+        <Link href="/leaderboard" className="px-4 py-2 text-xs md:text-sm font-bold text-white hover:text-yellow-400 whitespace-nowrap">传奇榜单</Link>
       </div>
     </div>
   );
