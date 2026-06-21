@@ -16,24 +16,12 @@ export async function POST(request: NextRequest) {
     const bgName = bgId ? bgId.replace('bg-', '') : 'camo';
     const newId = `${bgName}-${shortCode}`;
     
-    // Upload paintData to R2
-    const { env } = await getCloudflareContext();
-    const r2 = (env as any).CAMO_IMAGES as R2Bucket;
-    
-    // paintData is base64 like "data:image/png;base64,iVBORw0KGgo..."
-    const base64Data = paintData.split(',')[1];
-    const buffer = Buffer.from(base64Data, 'base64');
-    
-    const r2Key = `${newId}.png`;
-    await r2.put(r2Key, buffer, {
-      httpMetadata: { contentType: 'image/png' },
-    });
-
-    const imageUrl = `/api/images/${r2Key}`;
+    // Save the Base64 paintData directly to D1
+    // We can do this because canvas size is restricted to 250x250, so it's very small.
 
     const entry: HideEntry = {
       id: newId,
-      paintData: imageUrl,
+      paintData: paintData,
       bgId,
       poseId,
       rotation,
