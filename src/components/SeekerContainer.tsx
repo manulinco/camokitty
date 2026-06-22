@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import PaintCanvas from './PaintCanvas';
-import { HideEntry } from '@/lib/db';
+import type { HideEntry } from '@/lib/db';
 import { BACKGROUNDS, POSES } from '@/lib/levels';
 
 export default function SeekerContainer({ challengeId, bgId }: { challengeId?: string, bgId?: string }) {
