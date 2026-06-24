@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import PaintCanvas from './PaintCanvas';
 import type { HideEntry } from '@/lib/db';
 import { BACKGROUNDS, POSES } from '@/lib/levels';
@@ -24,6 +24,26 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
   const lastHitTimeRef = useRef<number>(0);
   const knockIdCounter = useRef<number>(0);
 
+  // Derive values from hideData safely (before any conditional returns)
+  const bgUrl = useMemo(() => {
+    if (!hideData) return BACKGROUNDS[0].url;
+    return BACKGROUNDS.find(b => b.id === hideData.bgId)?.url || BACKGROUNDS[0].url;
+  }, [hideData]);
+
+  const posePath = useMemo(() => {
+    if (!hideData) return POSES[0].path;
+    return POSES.find(p => p.id === hideData.poseId)?.path || POSES[0].path;
+  }, [hideData]);
+
+  const catRotation = hideData?.rotation || 0;
+  const catRotationX = hideData?.rotationX || 0;
+  const catRotationY = hideData?.rotationY || 0;
+  const catScale = hideData?.scale || 1;
+  
+  // Default to old fixed position if these are missing (for backward compatibility)
+  const posLeft = hideData?.posLeft !== undefined ? hideData.posLeft : 80;
+  const posTop = hideData?.posTop !== undefined ? hideData.posTop : 90;
+
   useEffect(() => {
     // Fetch hide data: either specific ID or random from global pool/bgId
     let fetchUrl = '/api/hides/random';
@@ -46,6 +66,17 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
         setError("Failed to connect to the Matrix.");
       });
   }, [challengeId, bgId]);
+
+  // Preload background image — must be called unconditionally (Rules of Hooks)
+  useEffect(() => {
+    if (bgUrl) {
+      setBgLoaded(false);
+      const img = new window.Image();
+      img.src = bgUrl;
+      img.onload = () => setBgLoaded(true);
+      img.onerror = () => setBgLoaded(true); // Fallback
+    }
+  }, [bgUrl]);
 
   const startGame = () => {
     setIsPlaying(true);
@@ -118,6 +149,8 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
     }, 500);
   };
 
+  // --- Conditional returns AFTER all hooks ---
+
   if (error) {
     return (
       <div className="flex flex-col h-screen items-center justify-center bg-[#0a0a0a] text-center px-4">
@@ -142,28 +175,6 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
   if (!hideData) {
     return <div className="text-cyan-400 font-bold text-2xl animate-pulse flex h-screen items-center justify-center">Loading Challenge...</div>;
   }
-
-  const bgUrl = BACKGROUNDS.find(b => b.id === hideData.bgId)?.url || BACKGROUNDS[0].url;
-  const posePath = POSES.find(p => p.id === hideData.poseId)?.path || POSES[0].path;
-  const rotation = hideData.rotation || 0;
-  const rotationX = hideData.rotationX || 0;
-  const rotationY = hideData.rotationY || 0;
-  const scale = hideData.scale || 1;
-  
-  // Default to old fixed position if these are missing (for backward compatibility)
-  const posLeft = hideData.posLeft !== undefined ? hideData.posLeft : 80; // approximate right-[20%]
-  const posTop = hideData.posTop !== undefined ? hideData.posTop : 90; // approximate bottom-[10%]
-
-  // Preload background image
-  useEffect(() => {
-    if (bgUrl) {
-      setBgLoaded(false);
-      const img = new Image();
-      img.src = bgUrl;
-      img.onload = () => setBgLoaded(true);
-      img.onerror = () => setBgLoaded(true); // Fallback
-    }
-  }, [bgUrl]);
 
   return (
     <div className="w-full max-w-4xl flex flex-col mx-auto bg-[#0a0a0a] rounded-2xl shadow-2xl border border-cyan-400/20 backdrop-blur-xl relative overflow-hidden">
@@ -194,7 +205,7 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
             top: `${posTop}%`,
             width: '25%',
             aspectRatio: '1 / 1',
-            transform: `translate(-50%, -50%) scale(${scale}) rotate(${rotation}deg) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`,
+            transform: `translate(-50%, -50%) scale(${catScale}) rotate(${catRotation}deg) rotateX(${catRotationX}deg) rotateY(${catRotationY}deg)`,
             filter: found ? 'drop-shadow(0 0 20px rgba(34,211,238,0.8))' : 'none'
           }}
           onClick={handleCatClick}
@@ -210,7 +221,7 @@ export default function SeekerContainer({ challengeId, bgId }: { challengeId?: s
                 showDecorations={found}
                 showShadow={false}
                 posePath={posePath}
-                rotation={rotation}
+                rotation={catRotation}
               />
               
               {/* Knock Hit Feedback Effects */}
